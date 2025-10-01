@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知识分享平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        neutral: '#F5F7FA',
+                        dark: '#1D2129',
+                        qq: '#12B7F5',
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+            }
+            .btn-primary {
+                @apply bg-primary text-white px-4 py-2 rounded-md transition-all duration-300 hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50;
+            }
+            .btn-secondary {
+                @apply bg-white text-primary border border-primary px-4 py-2 rounded-md transition-all duration-300 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-primary/50;
+            }
+            .btn-danger {
+                @apply bg-red-500 text-white px-4 py-2 rounded-md transition-all duration-300 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400;
+            }
+            .input-field {
+                @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all;
+            }
+        }
+    </style>
+</head>
+<body class="font-inter bg-neutral text-dark min-h-screen">
+    <!-- 导航栏 -->
+    <header class="bg-white shadow-sm sticky top-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-book text-primary text-2xl"></i>
+                <h1 class="text-xl md:text-2xl font-bold text-primary">知识分享平台</h1>
+            </div>
+            <nav class="hidden md:flex space-x-6">
+                <a href="#documents" class="hover:text-primary transition-colors">文档分享</a>
+                <a href="#links" class="hover:text-primary transition-colors">外部链接</a>
+                <a href="#contact" class="hover:text-primary transition-colors">联系作者</a>
+                <a href="#notes" class="hover:text-primary transition-colors">注意事项</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <button id="author-login-btn" class="btn-secondary text-sm hidden md:block">
+                    <i class="fa fa-lock mr-1"></i>作者登录
+                </button>
+                <button id="mobile-menu-btn" class="md:hidden text-dark">
+                    <i class="fa fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="container mx-auto px-4 py-2 flex flex-col space-y-3">
+                <a href="#documents" class="py-2 hover:text-primary transition-colors">文档分享</a>
+                <a href="#links" class="py-2 hover:text-primary transition-colors">外部链接</a>
+                <a href="#contact" class="py-2 hover:text-primary transition-colors">联系作者</a>
+                <a href="#notes" class="py-2 hover:text-primary transition-colors">注意事项</a>
+                <button id="mobile-author-login-btn" class="btn-secondary text-sm w-full text-center">
+                    <i class="fa fa-lock mr-1"></i>作者登录
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- 介绍区域 -->
+        <section class="text-center mb-12 max-w-3xl mx-auto">
+            <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold mb-4 text-dark">分享你的知识，连接全世界</h2>
+            <p class="text-gray-600 text-lg mb-8">在这里，你可以浏览各种共享的文档和链接资源，共同构建一个丰富的知识宝库。</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <button id="add-document-btn" class="btn-primary author-action hidden">
+                    <i class="fa fa-plus mr-2"></i>添加文档
+                </button>
+                <button id="add-link-btn" class="btn-secondary author-action hidden">
+                    <i class="fa fa-link mr-2"></i>添加链接
+                </button>
+            </div>
+        </section>
+
+        <!-- 文档分享区域 -->
+        <section id="documents" class="mb-16">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-2xl font-bold text-dark flex items-center">
+                    <i class="fa fa-file-text-o text-primary mr-3"></i>文档分享
+                </h3>
+                <span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm" id="document-count">0 个文档</span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="documents-container">
+                <!-- 文档卡片示例 -->
+                <div class="bg-white rounded-lg shadow p-6 card-hover document-card">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center">
+                            <i class="fa fa-file-word-o text-blue-600 text-2xl mr-3"></i>
+                            <h4 class="text-lg font-semibold" data-field="title">Python 编程入门.docx</h4>
+                        </div>
+                        <div class="flex space-x-2 author-actions hidden">
+                            <button class="edit-btn text-gray-500 hover:text-primary transition-colors" title="编辑">
+                                <i class="fa fa-pencil"></i>
+                            </button>
+                            <button class="delete-btn text-gray-500 hover:text-red-500 transition-colors" title="删除">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                            <button class="copy-btn text-gray-500 hover:text-primary transition-colors" title="复制文档名称">
+                                <i class="fa fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="flex space-x-2 visitor-actions">
+                            <button class="copy-btn text-gray-500 hover:text-primary transition-colors" title="复制文档名称">
+                                <i class="fa fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4" data-field="description">这是一份关于Python编程基础的入门文档，适合初学者学习。</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-500">上传于 2023-05-15</span>
+                        <a href="#" class="text-primary hover:underline flex items-center">
+                            下载 <i class="fa fa-download ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-6 card-hover document-card">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center">
+                            <i class="fa fa-file-pdf-o text-red-600 text-2xl mr-3"></i>
+                            <h4 class="text-lg font-semibold" data-field="title">数据分析实战.pdf</h4>
+                        </div>
+                        <div class="flex space-x-2 author-actions hidden">
+                            <button class="edit-btn text-gray-500 hover:text-primary transition-colors" title="编辑">
+                                <i class="fa fa-pencil"></i>
+                            </button>
+                            <button class="delete-btn text-gray-500 hover:text-red-500 transition-colors" title="删除">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                            <button class="copy-btn text-gray-500 hover:text-primary transition-colors" title="复制文档名称">
+                                <i class="fa fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="flex space-x-2 visitor-actions">
+                            <button class="copy-btn text-gray-500 hover:text-primary transition-colors" title="复制文档名称">
+                                <i class="fa fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4" data-field="description">数据分析实战案例详解，包含多个行业的实际应用。</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-500">上传于 2023-06-10</span>
+                        <a href="#" class="text-primary hover:underline flex items-center">
+                            下载 <i class="fa fa-download ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-6 card-hover document-card">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center">
+                            <i class="fa fa-file-excel-o text-green-600 text-2xl mr-3"></i>
+                            <h4 class="text-lg font-semibold" data-field="title">销售数据统计.xlsx</h4>
+                        </div>
+                        <div class="flex space-x-2 author-actions hidden">
+                            <button class="edit-btn text-gray-500 hover:text-primary transition-colors" title="编辑">
+                                <i class="fa fa-pencil"></i>
+                            </button>
+                            <button class="delete-btn text-gray-500 hover:text-red-500 transition-colors" title="删除">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                            <button class="copy-btn text-gray-500 hover:text-primary transition-colors" title="复制文档名称">
+                                <i class="fa fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="flex space-x-2 visitor-actions">
+                            <button class="copy-btn text-gray-500 hover:text-primary transition-colors" title="复制文档名称">
+                                <i class="fa fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4" data-field="description">2023年度销售数据统计与分析表格。</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-500">上传于 2023-07-05</span>
+                        <a href="#" class="text-primary hover:underline flex items-center">
+                            下载 <i class="fa fa-download ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 外部链接区域 -->
+        <section id="links" class="mb-16">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-2xl font-bold text-dark flex items-center">
+                    <i class="fa fa-link text-secondary mr-3"></i>外部链接
+                </h3>
+                <span class="bg-secondary/10 text-secondary px-3 py-1 rounded-full text-sm" id="link-count">0 个链接</span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="links-container">
+                <!-- 链接卡片示例 -->
+                <div class="bg-white rounded-lg shadow p-6 card-hover link-card">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center">
+                            <i class="fa fa-globe text-green-500 text-2xl mr-3"></i>
+                            <h4 class="text-lg font-semibold" data-field="title">MDN Web 文档</h4>
+                        </div>
+                        <div class="flex space-x-2 author-actions hidden">
+                            <button class="edit-btn text-gray-500 hover:text-primary transition-colors" title="编辑">
+                                <i class="fa fa-pencil"></i>
+                            </button>
+                            <button class="delete-btn text-gray-500 hover:text-red-500 transition-colors" title="删除">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                            <button class="copy-btn text-gray-500 hover:text-primary transition-colors" title="复制链接">
+                                <i class="fa fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="flex space-x-2 visitor-actions">
+                            <button class="copy-btn text-gray-500 hover:text-primary transition-colors" title="复制链接">
+                                <i class="fa fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-2" data-field="description">最权威的Web开发技术文档，包含HTML、CSS、JavaScript等内容。</p>
+                    <a href="https://developer.mozilla.org/zh-CN/" target="_blank" class="text-primary hover:underline text-sm break-all link-url" data-field="url">https://developer.mozilla.org/zh-CN/</a>
+                    <div class="mt-4 text-sm text-gray-500">最后更新: 2023-07-01</div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-6 card-hover link-card">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center">
+                            <i class="fa fa-github text-gray-800 text-2xl mr-3"></i>
+                            <h4 class="text-lg font-semibold" data-field="title">GitHub</h4>
+                        </div>
+                        <div class="flex space-x-2 author-actions hidden">
+                            <button class="edit-btn text-gray-500 hover:text-primary transition-colors" title="编辑">
+                                <i class="fa fa-pencil"></i>
+                            </button>
+                            <button class="delete-btn text-gray-500 hover:text-red-500 transition-colors" title="删除">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                            <button class="copy-btn text-gray-500 hover:text-primary transition-colors" title="复制链接">
+                                <i class="fa fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="flex space-x-2 visitor-actions">
+                            <button class="copy-btn text-gray-500 hover:text-primary transition-colors" title="复制链接">
+                                <i class="fa fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-2" data-field="description">全球最大的代码托管平台，可用于版本控制和协作开发。</p>
+                    <a href="https://github.com/" target="_blank" class="text-primary hover:underline text-sm break-all link-url" data-field="url">https://github.com/</a>
+                    <div class="mt-4 text-sm text-gray-500">最后更新: 2023-06-15</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 联系作者区域 -->
+        <section id="contact" class="mb-16">
+            <h3 class="text-2xl font-bold text-dark flex items-center mb-6">
+                <i class="fa fa-envelope-o text-primary mr-3"></i>联系作者
+            </h3>
+            
+            <div class="bg-white rounded-lg shadow p-6 md:p-8">
+                <p class="text-gray-600 mb-8 text-center max-w-2xl mx-auto">如果您有任何问题、建议或合作意向，欢迎通过以下方式联系我，我会尽快回复您。</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- 邮箱联系 -->
+                    <div class="flex flex-col items-center text-center p-4 rounded-lg hover:bg-neutral transition-colors duration-300">
+                        <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                            <i class="fa fa-envelope text-primary text-2xl"></i>
+                        </div>
+                        <h4 class="text-lg font-semibold mb-2">电子邮箱</h4>
+                        <p class="text-gray-600 mb-3">发送邮件咨询问题</p>
+                        <div class="flex flex-col items-center space-y-2 w-full">
+                            <div class="flex items-center w-full justify-center">
+                                <a href="mailto:320165264@qq.com" class="text-primary hover:underline mr-2 contact-info" data-type="email">320165264@qq.com</a>
+                                <button class="copy-contact text-gray-500 hover:text-primary transition-colors" title="复制邮箱">
+                                    <i class="fa fa-copy"></i>
+                                </button>
+                            </div>
+                            <div class="flex items-center w-full justify-center">
+                                <a href="mailto:linyonghan65@gmail.com" class="text-primary hover:underline mr-2 contact-info" data-type="email">linyonghan65@gmail.com</a>
+                                <button class="copy-contact text-gray-500 hover:text-primary transition-colors" title="复制邮箱">
+                                    <i class="fa fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- QQ联系 -->
+                    <div class="flex flex-col items-center text-center p-4 rounded-lg hover:bg-neutral transition-colors duration-300">
+                        <div class="w-16 h-16 rounded-full bg-qq/10 flex items-center justify-center mb-4">
+                            <i class="fa fa-qq text-qq text-2xl"></i>
+                        </div>
+                        <h4 class="text-lg font-semibold mb-2">QQ</h4>
+                        <p class="text-gray-600 mb-3">通过QQ沟通交流</p>
+                        <div class="flex items-center">
+                            <span class="text-gray-800 mr-2 contact-info" data-type="qq">320165264</span>
+                            <button class="copy-contact text-gray-500 hover:text-primary transition-colors" title="复制QQ号">
+                                <i class="fa fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 注意事项区域 -->
+        <section id="notes" class="mb-16">
+            <h3 class="text-2xl font-bold text-dark flex items-center mb-6">
+                <i class="fa fa-exclamation-circle text-amber-500 mr-3"></i>注意事项
+            </h3>
+            
+            <div class="bg-white rounded-lg shadow p-6">
+                <ul class="space-y-4">
+                    <li class="flex">
+                        <i class="fa fa-check-circle text-green-500 mt-1 mr-3 flex-shrink-0"></i>
+                        <p>分享的文档和链接应遵守相关法律法规，不得包含违法、色情、暴力等不良内容。</p>
+                    </li>
+                    <li class="flex">
+                        <i class="fa fa-check-circle text-green-500 mt-1 mr-3 flex-shrink-0"></i>
+                        <p>尊重知识产权，请勿分享未经授权的版权材料。</p>
+                    </li>
+                    <li class="flex">
+                        <i class="fa fa-check-circle text-green-500 mt-1 mr-3 flex-shrink-0"></i>
+                        <p>只有作者有权限修改和删除内容，普通用户只能浏览和复制。</p>
+                    </li>
+                    <li class="flex">
+                        <i class="fa fa-check-circle text-green-500 mt-1 mr-3 flex-shrink-0"></i>
+                        <p>外部链接可能会随时间变化，如发现失效链接请联系作者更新。</p>
+                    </li>
+                    <li class="flex">
+                        <i class="fa fa-check-circle text-green-500 mt-1 mr-3 flex-shrink-0"></i>
+                        <p>请勿分享涉及个人隐私或敏感信息的内容。</p>
+                    </li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- 作者登录模态框 -->
+    <div id="author-login-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md transform transition-all">
+            <div class="p-6 border-b">
+                <h3 class="text-xl font-bold">作者登录</h3>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-gray-700 mb-2" for="author-username">用户名</label>
+                    <input type="text" id="author-username" class="input-field" placeholder="输入管理员用户名">
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-2" for="author-password">密码</label>
+                    <input type="password" id="author-password" class="input-field" placeholder="输入管理员密码">
+                </div>
+                <div class="text-red-500 text-sm hidden" id="login-error">
+                    用户名或密码错误，请重试
+                </div>
+            </div>
+            <div class="p-6 border-t flex justify-end space-x-3">
+                <button id="cancel-login" class="btn-secondary">取消</button>
+                <button id="submit-login" class="btn-primary">登录</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加文档模态框 -->
+    <div id="document-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md transform transition-all">
+            <div class="p-6 border-b">
+                <h3 class="text-xl font-bold">添加新文档</h3>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-gray-700 mb-2" for="doc-title">文档标题</label>
+                    <input type="text" id="doc-title" class="input-field" placeholder="例如：Python 编程入门">
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-2" for="doc-desc">文档描述</label>
+                    <textarea id="doc-desc" class="input-field" rows="3" placeholder="描述一下这个文档的内容..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-2" for="doc-type">文档类型</label>
+                    <select id="doc-type" class="input-field">
+                        <option value="docx">Word 文档 (.docx)</option>
+                        <option value="pdf">PDF 文档 (.pdf)</option>
+                        <option value="xlsx">Excel 表格 (.xlsx)</option>
+                        <option value="pptx">PowerPoint 演示文稿 (.pptx)</option>
+                        <option value="txt">文本文件 (.txt)</option>
+                        <option value="md">Markdown 文档 (.md)</option>
+                        <option value="zip">压缩文件 (.zip)</option>
+                        <option value="rar">压缩文件 (.rar)</option>
+                        <option value="jpg">图片文件 (.jpg)</option>
+                        <option value="png">图片文件 (.png)</option>
+                        <option value="other">其他格式</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-2" for="doc-file">上传文件</label>
+                    <input type="file" id="doc-file" class="input-field" accept=".docx,.pdf,.xlsx,.pptx,.txt,.md,.zip,.rar,.jpg,.png">
+                </div>
+            </div>
+            <div class="p-6 border-t flex justify-end space-x-3">
+                <button id="cancel-doc" class="btn-secondary">取消</button>
+                <button id="save-doc" class="btn-primary">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加链接模态框 -->
+    <div id="link-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md transform transition-all">
+            <div class="p-6 border-b">
+                <h3 class="text-xl font-bold">添加新链接</h3>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-gray-700 mb-2" for="link-title">链接名称</label>
+                    <input type="text" id="link-title" class="input-field" placeholder="例如：MDN Web 文档">
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-2" for="link-desc">链接描述</label>
+                    <textarea id="link-desc" class="input-field" rows="3" placeholder="描述一下这个链接的内容..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-2" for="link-url">链接地址</label>
+                    <input type="url" id="link-url" class="input-field" placeholder="https://example.com" required>
+                </div>
+            </div>
+            <div class="p-6 border-t flex justify-end space-x-3">
+                <button id="cancel-link" class="btn-secondary">取消</button>
+                <button id="save-link" class="btn-primary">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑内容模态框 -->
+    <div id="edit-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md transform transition-all">
+            <div class="p-6 border-b">
+                <h3 class="text-xl font-bold">编辑内容</h3>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-gray-700 mb-2" for="edit-title">标题</label>
+                    <input type="text" id="edit-title" class="input-field">
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-2" for="edit-desc">描述</label>
+                    <textarea id="edit-desc" class="input-field" rows="3"></textarea>
+                </div>
+                <div id="edit-url-container" class="hidden">
+                    <label class="block text-gray-700 mb-2" for="edit-url">链接地址</label>
+                    <input type="url" id="edit-url" class="input-field">
+                </div>
+                <input type="hidden" id="edit-type" value="">
+                <input type="hidden" id="edit-id" value="">
+            </div>
+            <div class="p-6 border-t flex justify-end space-x-3">
+                <button id="cancel-edit" class="btn-secondary">取消</button>
+                <button id="save-edit" class="btn-primary">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 确认删除模态框 -->
+    <div id="delete-confirm-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md transform transition-all">
+            <div class="p-6 border-b">
+                <h3 class="text-xl font-bold text-red-500 flex items-center">
+                    <i class="fa fa-exclamation-triangle mr-2"></i>确认删除
+                </h3>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-gray-700">您确定要删除这个项目吗？此操作无法撤销。</p>
+                <input type="hidden" id="delete-type" value="">
+                <input type="hidden" id="delete-id" value="">
+            </div>
+            <div class="p-6 border-t flex justify-end space-x-3">
+                <button id="cancel-delete" class="btn-secondary">取消</button>
+                <button id="confirm-delete" class="btn-danger">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通知提示 -->
+    <div id="notification" class="fixed bottom-4 right-4 bg-dark text-white px-4 py-3 rounded-md shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 flex items-center">
+        <i id="notification-icon" class="fa fa-check-circle mr-2"></i>
+        <span id="notification-text">操作成功</span>
+    </div>
+
+    <footer class="bg-dark text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa fa-book text-primary text-xl"></i>
+                        <span class="font-bold">知识分享平台</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mt-2">分享知识，连接世界</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa fa-github text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa fa-twitter text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa fa-envelope text-xl"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-6 pt-6 text-center text-gray-400 text-sm">
+                &copy; 2023 知识分享平台 - 保留所有权利
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 全局状态 - 记录作者是否登录
+        let isAuthorLoggedIn = false;
+        
+        // 文档类型图标映射
+        const docTypeIcons = {
+            'docx': { icon: 'fa-file-word-o', color: 'text-blue-600' },
+            'pdf': { icon: 'fa-file-pdf-o', color: 'text-red-600' },
+            'xlsx': { icon: 'fa-file-excel-o', color: 'text-green-600' },
+            'pptx': { icon: 'fa-file-powerpoint-o', color: 'text-orange-600' },
+            'txt': { icon: 'fa-file-text-o', color: 'text-gray-700' },
+            'md': { icon: 'fa-file-code-o', color: 'text-purple-600' },
+            'zip': { icon: 'fa-file-zip-o', color: 'text-amber-600' },
+            'rar': { icon: 'fa-file-zip-o', color: 'text-amber-600' },
+            'jpg': { icon: 'fa-file-image-o', color: 'text-green-500' },
+            'png': { icon: 'fa-file-image-o', color: 'text-green-500' },
+            'other': { icon: 'fa-file-o', color: 'text-gray-500' }
+        };
+        
+        // 初始化计数
+        updateCounts();
+        
+        // 移动端菜单切换
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // 导航栏滚动效果
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 10) {
+                header.classList.add('py-2');
+                header.classList.remove('py-4');
+            } else {
+                header.classList.add('py-4');
+                header.classList.remove('py-2');
+            }
+        });
+        
+        // 显示通知
+        function showNotification(message, isSuccess = true) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notification-text');
+            const notificationIcon = document.getElementById('notification-icon');
+            
+            notificationText.textContent = message;
+            notificationIcon.className = isSuccess ? 'fa fa-check-circle mr-2' : 'fa fa-exclamation-circle mr-2 text-amber-400';
+            
+            notification.classList.remove('translate-y-20', 'opacity-0');
+            notification.classList.add('translate-y-0', 'opacity-100');
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-y-0', 'opacity-100');
+                notification.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+        
+        // 复制功能 - 文档和链接
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const card = e.target.closest('.document-card, .link-card');
+                let textToCopy = '';
+                
+                if (card.classList.contains('document-card')) {
+                    textToCopy = card.querySelector('[data-field="title"]').textContent;
+                } else if (card.classList.contains('link-card')) {
+                    textToCopy = card.querySelector('.link-url').href;
+                }
+                
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    showNotification('已复制到剪贴板');
+                }).catch(err => {
+                    showNotification('复制失败，请手动复制', false);
+                    console.error('复制失败:', err);
+                });
+            });
+        });
+        
+        // 复制联系信息功能
+        document.querySelectorAll('.copy-contact').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const contactInfo = e.target.closest('.flex').querySelector('.contact-info').textContent;
+                const contactType = e.target.closest('.flex').querySelector('.contact-info').dataset.type;
+                let typeText = '';
+                
+                switch(contactType) {
+                    case 'email':
+                        typeText = '邮箱';
+                        break;
+                    case 'qq':
+                        typeText = 'QQ号';
+                        break;
+                }
+                
+                navigator.clipboard.writeText(contactInfo).then(() => {
+                    showNotification(`已复制${typeText}到剪贴板`);
+                }).catch(err => {
+                    showNotification(`复制${typeText}失败，请手动复制`, false);
+                    console.error('复制失败:', err);
+                });
+            });
+        });
+        
+        // 作者登录相关功能
+        const authorLoginModal = document.getElementById('author-login-modal');
+        const authorLoginBtn = document.getElementById('author-login-btn');
+        const mobileAuthorLoginBtn = document.getElementById('mobile-author-login-btn');
+        const cancelLoginBtn = document.getElementById('cancel-login');
+        const submitLoginBtn = document.getElementById('submit-login');
+        const loginError = document.getElementById('login-error');
+        
+        // 打开登录模态框
+        authorLoginBtn.addEventListener('click', () => {
+            authorLoginModal.classList.remove('hidden');
+            authorLoginModal.classList.add('flex');
+            loginError.classList.add('hidden');
+        });
+        
+        mobileAuthorLoginBtn.addEventListener('click', () => {
+            authorLoginModal.classList.remove('hidden');
+            authorLoginModal.classList.add('flex');
+            mobileMenu.classList.add('hidden');
+            loginError.classList.add('hidden');
+        });
+        
+        // 关闭登录模态框
+        cancelLoginBtn.addEventListener('click', () => {
+            authorLoginModal.classList.add('hidden');
+            authorLoginModal.classList.remove('flex');
+            document.getElementById('author-username').value = '';
+            document.getElementById('author-password').value = '';
+        });
+        
+        // 点击模态框外部关闭
+        authorLoginModal.addEventListener('click', (e) => {
+            if (e.target === authorLoginModal) {
+                authorLoginModal.classList.add('hidden');
+                authorLoginModal.classList.remove('flex');
+                document.getElementById('author-username').value = '';
+                document.getElementById('author-password').value = '';
+            }
+        });
+        
+        // 提交登录（这里使用简单验证，实际应用中应使用服务器验证）
+        submitLoginBtn.addEventListener('click', () => {
+            const username = document.getElementById('author-username').value.trim();
+            const password = document.getElementById('author-password').value.trim();
+            
+            // 简单验证，实际应用中应替换为真实的验证逻辑
+            if (username === 'author' && password === 'password') {
+                isAuthorLoggedIn = true;
+                authorLoginModal.classList.add('hidden');
+                authorLoginModal.classList.remove('flex');
+                document.getElementById('author-username').value = '';
+                document.getElementById('author-password').value = '';
+                
+                // 更新UI，显示作者权限
+                updateAuthorUI();
+                showNotification('登录成功，已获得编辑权限');
+            } else {
+                loginError.classList.remove('hidden');
+            }
+        });
+        
+        // 更新作者UI
+        function updateAuthorUI() {
+            if (isAuthorLoggedIn) {
+                // 显示作者操作按钮
+                document.querySelectorAll('.author-action').forEach(el => {
+                    el.classList.remove('hidden');
+                });
+                
+                // 显示每个卡片上的作者操作按钮，隐藏访客按钮
+                document.querySelectorAll('.author-actions').forEach(el => {
+                    el.classList.remove('hidden');
+                });
+                
+                document.querySelectorAll('.visitor-actions').forEach(el => {
+                    el.classList.add('hidden');
+                });
+                
+                // 更改登录按钮为登出按钮
+                authorLoginBtn.innerHTML = '<i class="fa fa-sign-out mr-1"></i>退出登录';
+                mobileAuthorLoginBtn.innerHTML = '<i class="fa fa-sign-out mr-1"></i>退出登录';
+                
+                // 添加登出功能
+                authorLoginBtn.removeEventListener('click', openLoginModal);
+                authorLoginBtn.addEventListener('click', logout);
+                
+                mobileAuthorLoginBtn.removeEventListener('click', openMobileLoginModal);
+                mobileAuthorLoginBtn.addEventListener('click', logout);
+            } else {
+                // 隐藏作者操作按钮
+                document.querySelectorAll('.author-action').forEach(el => {
+                    el.classList.add('hidden');
+                });
+                
+                // 隐藏每个卡片上的作者操作按钮，显示访客按钮
+                document.querySelectorAll('.author-actions').forEach(el => {
+                    el.classList.add('hidden');
+                });
+                
+                document.querySelectorAll('.visitor-actions').forEach(el => {
+                    el.classList.remove('hidden');
+                });
+                
+                // 更改登出按钮为登录按钮
+                authorLoginBtn.innerHTML = '<i class="fa fa-lock mr-1"></i>作者登录';
+                mobileAuthorLoginBtn.innerHTML = '<i class="fa fa-lock mr-1"></i>作者登录';
+                
+                // 恢复登录功能
+                authorLoginBtn.removeEventListener('click', logout);
+                authorLoginBtn.addEventListener('click', openLoginModal);
+                
+                mobileAuthorLoginBtn.removeEventListener('click', logout);
+                mobileAuthorLoginBtn.addEventListener('click', openMobileLoginModal);
+            }
+        }
+        
+        // 登出功能
+        function logout() {
+            isAuthorLoggedIn = false;
+            updateAuthorUI();
+            showNotification('已成功退出登录');
+        }
+        
+        // 登录辅助函数
+        function openLoginModal() {
+            authorLoginModal.classList.remove('hidden');
+            authorLoginModal.classList.add('flex');
+            loginError.classList.add('hidden');
+        }
+        
+        function openMobileLoginModal() {
+            authorLoginModal.classList.remove('hidden');
+            authorLoginModal.classList.add('flex');
+            mobileMenu.classList.add('hidden');
+            loginError.classList.add('hidden');
+        }
+        
+        // 编辑功能
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.edit-btn')) {
+                const editBtn = e.target.closest('.edit-btn');
+                const card = editBtn.closest('.document-card, .link-card');
+                const isDocument = card.classList.contains('document-card');
+                
+                // 填充编辑表单
+                document.getElementById('edit-title').value = card.querySelector('[data-field="title"]').textContent;
+                document.getElementById('edit-desc').value = card.querySelector('[data-field="description"]').textContent;
+                document.getElementById('edit-type').value = isDocument ? 'document' : 'link';
+                document.getElementById('edit-id').value = card.dataset.id || generateId();
+                
+                // 如果没有ID，添加一个
+                if (!card.dataset.id) {
+                    card.dataset.id = document.getElementById('edit-id').value;
+                }
+                
+                // 链接类型显示URL编辑框
+                if (!isDocument) {
+                    document.getElementById('edit-url').value = card.querySelector('.link-url').href;
+                    document.getElementById('edit-url-container').classList.remove('hidden');
+                } else {
+                    document.getElementById('edit-url-container').classList.add('hidden');
+                }
+                
+                // 显示编辑模态框
+                document.getElementById('edit-modal').classList.remove('hidden');
+                document.getElementById('edit-modal').classList.add('flex');
+            }
+        });
+        
+        // 删除功能
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.delete-btn')) {
+                const deleteBtn = e.target.closest('.delete-btn');
+                const card = deleteBtn.closest('.document-card, .link-card');
+                const isDocument = card.classList.contains('document-card');
+                
+                // 记录要删除的项目信息
+                document.getElementById('delete-type').value = isDocument ? 'document' : 'link';
+                document.getElementById('delete-id').value = card.dataset.id || generateId();
+                
+                // 如果没有ID，添加一个
+                if (!card.dataset.id) {
+                    card.dataset.id = document.getElementById('delete-id').value;
+                }
+                
+                // 显示删除确认模态框
+                document.getElementById('delete-confirm-modal').classList.remove('hidden');
+                document.getElementById('delete-confirm-modal').classList.add('flex');
+            }
+        });
+        
+        // 保存编辑
+        document.getElementById('save-edit').addEventListener('click', () => {
+            const type = document.getElementById('edit-type').value;
+            const id = document.getElementById('edit-id').value;
+            const title = document.getElementById('edit-title').value.trim();
+            const desc = document.getElementById('edit-desc').value.trim();
+            
+            if (!title || !desc) {
+                showNotification('请填写所有必填字段', false);
+                return;
+            }
+            
+            // 查找对应的卡片
+            const card = document.querySelector(`[data-id="${id}"]`);
+            
+            if (card) {
+                // 更新标题和描述
+                card.querySelector('[data-field="title"]').textContent = title;
+                card.querySelector('[data-field="description"]').textContent = desc;
+                
+                // 如果是链接，更新URL
+                if (type === 'link') {
+                    const url = document.getElementById('edit-url').value.trim();
+                    if (url) {
+                        const linkElement = card.querySelector('.link-url');
+                        linkElement.href = url;
+                        linkElement.textContent = url;
+                    }
+                }
+                
+                // 关闭模态框
+                document.getElementById('edit-modal').classList.add('hidden');
+                document.getElementById('edit-modal').classList.remove('flex');
+                
+                showNotification('内容更新成功');
+            }
+        });
+        
+        // 确认删除
+        document.getElementById('confirm-delete').addEventListener('click', () => {
+            const type = document.getElementById('delete-type').value;
+            const id = document.getElementById('delete-id').value;
+            
+            // 查找对应的卡片
+            const card = document.querySelector(`[data-id="${id}"]`);
+            
+            if (card) {
+                // 删除卡片
+                card.remove();
+                
+                // 关闭模态框
+                document.getElementById('delete-confirm-modal').classList.add('hidden');
+                document.getElementById('delete-confirm-modal').classList.remove('flex');
+                
+                // 更新计数
+                updateCounts();
+                
+                showNotification('内容已删除');
+            }
+        });
+        
+        // 取消编辑
+        document.getElementById('cancel-edit').addEventListener('click', () => {
+            document.getElementById('edit-modal').classList.add('hidden');
+            document.getElementById('edit-modal').classList.remove('flex');
+        });
+        
+        // 点击编辑模态框外部关闭
+        document.getElementById('edit-modal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('edit-modal')) {
+                document.getElementById('edit-modal').classList.add('hidden');
+                document.getElementById('edit-modal').classList.remove('flex');
+            }
+        });
+        
+        // 取消删除
+        document.getElementById('cancel-delete').addEventListener('click', () => {
+            document.getElementById('delete-confirm-modal').classList.add('hidden');
+            document.getElementById('delete-confirm-modal').classList.remove('flex');
+        });
+        
+        // 点击删除模态框外部关闭
+        document.getElementById('delete-confirm-modal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('delete-confirm-modal')) {
+                document.getElementById('delete-confirm-modal').classList.add('hidden');
+                document.getElementById('delete-confirm-modal').classList.remove('flex');
+            }
+        });
+        
+        // 模态框控制 - 添加文档和链接
+        const documentModal = document.getElementById('document-modal');
+        const linkModal = document.getElementById('link-modal');
+        
+        document.getElementById('add-document-btn').addEventListener('click', () => {
+            if (isAuthorLoggedIn) {
+                documentModal.classList.remove('hidden');
+                documentModal.classList.add('flex');
+            } else {
+                showNotification('请先以作者身份登录', false);
+            }
+        });
+        
+        document.getElementById('add-link-btn').addEventListener('click', () => {
+            if (isAuthorLoggedIn) {
+                linkModal.classList.remove('hidden');
+                linkModal.classList.add('flex');
+            } else {
+                showNotification('请先以作者身份登录', false);
+            }
+        });
+        
+        document.getElementById('cancel-doc').addEventListener('click', () => {
+            documentModal.classList.add('hidden');
+            documentModal.classList.remove('flex');
+            resetDocumentForm();
+        });
+        
+        document.getElementById('cancel-link').addEventListener('click', () => {
+            linkModal.classList.add('hidden');
+            linkModal.classList.remove('flex');
+            resetLinkForm();
+        });
+        
+        // 点击模态框外部关闭
+        documentModal.addEventListener('click', (e) => {
+            if (e.target === documentModal) {
+                documentModal.classList.add('hidden');
+                documentModal.classList.remove('flex');
+                resetDocumentForm();
+            }
+        });
+        
+        linkModal.addEventListener('click', (e) => {
+            if (e.target === linkModal) {
+                linkModal.classList.add('hidden');
+                linkModal.classList.remove('flex');
+                resetLinkForm();
+            }
+        });
+        
+        // 重置表单
+        function resetDocumentForm() {
+            document.getElementById('doc-title').value = '';
+            document.getElementById('doc-desc').value = '';
+            document.getElementById('doc-type').selectedIndex = 0;
+            document.getElementById('doc-file').value = '';
+        }
+        
+        function resetLinkForm() {
+            document.getElementById('link-title').value = '';
+            document.getElementById('link-desc').value = '';
+            document.getElementById('link-url').value = '';
+        }
+        
+        // 生成唯一ID
+        function generateId() {
+            return 'id_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+        }
+        
+        // 保存新文档
+        document.getElementById('save-doc').addEventListener('click', () => {
+            const title = document.getElementById('doc-title').value.trim();
+            const desc = document.getElementById('doc-desc').value.trim();
+            const type = document.getElementById('doc-type').value;
+            const fileInput = document.getElementById('doc-file');
+            
+            if (!title || !desc || !fileInput.files.length) {
+                showNotification('请填写所有必填字段', false);
+                return;
+            }
+            
+            // 获取文件扩展名
+            const file = fileInput.files[0];
+            const fileName = file.name;
+            const fileExtension = fileName.split('.').pop().toLowerCase();
+            
+            // 确定文档类型和扩展名
+            let docExtension = type === 'other' ? fileExtension : type;
+            const formattedTitle = title.endsWith(`.${docExtension}`) ? title : `${title}.${docExtension}`;
+            
+            // 获取对应的图标信息
+            const iconInfo = docTypeIcons[type] || docTypeIcons['other'];
+            
+            // 创建新文档卡片
+            const documentsContainer = document.getElementById('documents-container');
+            const today = new Date().toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            }).replace(/\//g, '-');
+            
+            const newCard = document.createElement('div');
+            newCard.className = 'bg-white rounded-lg shadow p-6 card-hover document-card';
+            newCard.dataset.id = generateId();
+            newCard.innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center">
+                        <i class="fa ${iconInfo.icon} ${iconInfo.color} text-2xl mr-3"></i>
+                        <h4 class="text-lg font-semibold" data-field="title">${formattedTitle}</h4>
+                    </div>
+                    <div class="flex space-x-2 author-actions ${isAuthorLoggedIn ? '' : 'hidden'}">
+                        <button class="edit-btn text-gray-500 hover:text-primary transition-colors" title="编辑">
+                            <i class="fa fa-pencil"></i>
+                        </button>
+                        <button class="delete-btn text-gray-500 hover:text-red-500 transition-colors" title="删除">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                        <button class="copy-btn text-gray-500 hover:text-primary transition-colors" title="复制文档名称">
+                            <i class="fa fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="flex space-x-2 visitor-actions ${isAuthorLoggedIn ? 'hidden' : ''}">
+                        <button class="copy-btn text-gray-500 hover:text-primary transition-colors" title="复制文档名称">
+                            <i class="fa fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                <p class="text-gray-600 mb-4" data-field="description">${desc}</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-500">上传于 ${today}</span>
+                    <a href="#" class="text-primary hover:underline flex items-center">
+                        下载 <i class="fa fa-download ml-1"></i>
+                    </a>
+                </div>
+            `;
+            
+            documentsContainer.appendChild(newCard);
+            
+            // 关闭模态框并重置表单
+            documentModal.classList.add('hidden');
+            documentModal.classList.remove('flex');
+            resetDocumentForm();
+            
+            // 更新计数并显示通知
+            updateCounts();
+            showNotification('文档添加成功');
+        });
+        
+        // 保存新链接
+        document.getElementById('save-link').addEventListener('click', () => {
+            const title = document.getElementById('link-title').value.trim();
+            const desc = document.getElementById('link-desc').value.trim();
+            const url = document.getElementById('link-url').value.trim();
+            
+            if (!title || !desc || !url) {
+                showNotification('请填写所有必填字段', false);
+                return;
+            }
+            
+            // 确保URL以http://或https://开头
+            const formattedUrl = url.startsWith('http://') || url.startsWith('https://') 
+                ? url 
+                : 'https://' + url;
+            
+            // 创建新链接卡片
+            const linksContainer = document.getElementById('links-container');
+            const today = new Date().toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            }).replace(/\//g, '-');
+            
+            const newCard = document.createElement('div');
+            newCard.className = 'bg-white rounded-lg shadow p-6 card-hover link-card';
+            newCard.dataset.id = generateId();
+            newCard.innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center">
+                        <i class="fa fa-globe text-green-500 text-2xl mr-3"></i>
+                        <h4 class="text-lg font-semibold" data-field="title">${title}</h4>
+                    </div>
+                    <div class="flex space-x-2 author-actions ${isAuthorLoggedIn ? '' : 'hidden'}">
+                        <button class="edit-btn text-gray-500 hover:text-primary transition-colors" title="编辑">
+                            <i class="fa fa-pencil"></i>
+                        </button>
+                        <button class="delete-btn text-gray-500 hover:text-red-500 transition-colors" title="删除">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                        <button class="copy-btn text-gray-500 hover:text-primary transition-colors" title="复制链接">
+                            <i class="fa fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="flex space-x-2 visitor-actions ${isAuthorLoggedIn ? 'hidden' : ''}">
+                        <button class="copy-btn text-gray-500 hover:text-primary transition-colors" title="复制链接">
+                            <i class="fa fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                <p class="text-gray-600 mb-2" data-field="description">${desc}</p>
+                <a href="${formattedUrl}" target="_blank" class="text-primary hover:underline text-sm break-all link-url" data-field="url">${formattedUrl}</a>
+                <div class="mt-4 text-sm text-gray-500">最后更新: ${today}</div>
+            `;
+            
+            linksContainer.appendChild(newCard);
+            
+            // 关闭模态框并重置表单
+            linkModal.classList.add('hidden');
+            linkModal.classList.remove('flex');
+            resetLinkForm();
+            
+            // 更新计数并显示通知
+            updateCounts();
+            showNotification('链接添加成功');
+        });
+        
+        // 更新计数
+        function updateCounts() {
+            const documentCount = document.querySelectorAll('.document-card').length;
+            const linkCount = document.querySelectorAll('.link-card').length;
+            
+            document.getElementById('document-count').textContent = `${documentCount} 个文档`;
+            document.getElementById('link-count').textContent = `${linkCount} 个链接`;
+        }
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // 关闭移动菜单（如果打开）
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+    
